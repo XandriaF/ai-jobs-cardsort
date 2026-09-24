@@ -1,0 +1,892 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Разбор задач</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"></noscript>
+<style>
+  :root{
+    --bg:#f7f5f1; --surface:#ffffff; --surface-2:#efece5; --ink:#221f1a; --ink-soft:#6b665c;
+    --accent:#5b4fd6; --accent-ink:#ffffff; --accent-soft:#eeecfb;
+    --accent2:#ff8a5b; --accent2-soft:#ffe9df;
+    --good:#1f8a5f; --good-soft:#e6f5ee; --bad:#c74b3f; --bad-soft:#fbeae7;
+    --border:#e4e0d6; --radius:18px;
+    --shadow: 0 1px 2px rgba(30,25,10,.04), 0 8px 24px rgba(30,25,10,.06);
+    --maxw:1080px; --contentw:760px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#17161c; --surface:#211f27; --surface-2:#29262f; --ink:#f1efe9; --ink-soft:#a9a49b;
+      --accent:#8f85f2; --accent-ink:#141227; --accent-soft:#2a2740;
+      --accent2:#ff9d76; --accent2-soft:#3a2a22;
+      --good:#57c793; --good-soft:#153229; --bad:#e08276; --bad-soft:#3a2320;
+      --border:#37343d; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#17161c; --surface:#211f27; --surface-2:#29262f; --ink:#f1efe9; --ink-soft:#a9a49b;
+    --accent:#8f85f2; --accent-ink:#141227; --accent-soft:#2a2740;
+    --accent2:#ff9d76; --accent2-soft:#3a2a22;
+    --good:#57c793; --good-soft:#153229; --bad:#e08276; --bad-soft:#3a2320;
+    --border:#37343d; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.45; min-height:100vh; padding-bottom:108px;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:20px 16px 8px}
+  .wrap-narrow{max-width:var(--contentw);margin:0 auto;padding:20px 16px 8px}
+  .topbar{position:sticky;top:0;z-index:20;background:var(--bg);padding:12px 0 10px;border-bottom:1px solid var(--border);margin-bottom:18px}
+  .topbar-inner{max-width:var(--maxw);margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:12px}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14.5px;letter-spacing:.1px;white-space:nowrap;transition:opacity .2s}
+  .avatar{
+    position:relative;width:34px;height:34px;border-radius:50%;flex:none;
+    background:radial-gradient(circle at 32% 28%, #a89bff, var(--accent) 70%);
+    display:flex;align-items:center;justify-content:center;font-size:17px;
+    box-shadow:0 2px 8px rgba(91,79,214,.35); transition:background .3s ease, transform .3s ease;
+  }
+  .avatar.neutral{background:radial-gradient(circle at 32% 28%, #d8d2c4, var(--ink-soft) 85%); box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  .avatar-badge{
+    position:absolute;bottom:-4px;right:-6px;background:var(--good);color:#fff;font-size:10px;font-weight:800;
+    min-width:17px;height:17px;border-radius:99px;display:flex;align-items:center;justify-content:center;
+    padding:0 4px;border:2px solid var(--bg);transition:transform .15s ease;transform:scale(0);
+  }
+  .avatar-badge.show{transform:scale(1)}
+  .progress{flex:1;height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+  .progress > div{height:100%;background:linear-gradient(90deg, var(--accent), var(--accent2));border-radius:99px;transition:width .3s ease}
+  .step-label{font-size:12px;color:var(--ink-soft);white-space:nowrap;font-weight:600}
+
+  h1{font-size:25px;line-height:1.22;margin:0 0 10px;font-weight:800;letter-spacing:-.3px}
+  h2{font-size:19px;margin:0 0 4px;font-weight:800}
+  .lede{color:var(--ink-soft);font-size:15px;margin:0 0 22px;max-width:620px}
+  .card-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 22px;box-shadow:var(--shadow);margin-bottom:16px}
+
+  .hero{background:linear-gradient(135deg, var(--accent-soft), var(--accent2-soft));border:1px solid var(--border);border-radius:22px;padding:28px 22px;margin-bottom:22px;text-align:center}
+  .hero.neutral{background:var(--surface-2)}
+  .hero-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 14px;background:radial-gradient(circle at 32% 28%, #b6acff, var(--accent) 70%);display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 8px 24px rgba(91,79,214,.35);animation:float 3.2s ease-in-out infinite}
+  .hero-avatar.neutral{background:radial-gradient(circle at 32% 28%, #e4dfd2, var(--ink-soft) 85%);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes popIn{0%{transform:scale(.4) rotate(-8deg);opacity:0}70%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+
+  .stage-tag{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:99px;margin-bottom:10px}
+
+  .steps-mini{display:flex;gap:10px;margin:18px 0 24px;flex-wrap:wrap}
+  .steps-mini .s{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;font-size:13px}
+  .steps-mini .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:12px;margin-bottom:8px}
+
+  .btn{appearance:none;border:none;border-radius:14px;padding:14px 22px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .08s ease, opacity .15s ease, background .15s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .btn:active{transform:scale(.98)}
+  .btn-primary{background:linear-gradient(90deg, var(--accent), #7a6ef0);color:var(--accent-ink)}
+  .btn-primary:hover{opacity:.92}
+  .btn-primary[disabled]{opacity:.6;cursor:default}
+  .btn-ghost{background:var(--surface-2);color:var(--ink)}
+  .btn-ghost:hover{opacity:.85}
+  .btn-block{width:100%}
+  .btn-sm{padding:7px 12px;font-size:12.5px;border-radius:10px}
+
+  .footer-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(to top, var(--bg) 70%, transparent);padding:12px 16px 16px}
+  .footer-inner{max-width:var(--maxw);margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px}
+  .footer-row{display:flex;align-items:center;gap:12px}
+  .footer-count{font-size:13px;color:var(--ink-soft);flex:1}
+  .footer-count b{color:var(--ink)}
+  .footer-count.warn b{color:var(--bad)}
+
+  .tray-rows{display:flex;flex-direction:column;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+  .tray-row{display:flex;align-items:flex-start;gap:8px;background:var(--surface-2);border-radius:10px;padding:8px 9px;border:1px solid transparent}
+  .tray-row .tr-emoji{font-size:15px;flex:none;line-height:1.3}
+  .tray-row .tr-text{flex:1;font-size:12.5px;font-weight:600;line-height:1.32;white-space:normal;word-break:break-word}
+  .tray-row .tr-remove{flex:none;width:20px;height:20px;border-radius:99px;border:none;background:var(--bad-soft);color:var(--bad);font-weight:800;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .tray-row.excess{background:var(--accent2-soft);border-color:var(--accent2)}
+  .tray-flag{display:block;font-size:10px;font-weight:800;color:var(--accent2);text-transform:uppercase;letter-spacing:.3px;margin-top:2px;text-decoration:none}
+  .tray-empty{font-size:12.5px;color:var(--ink-soft);padding:2px 0}
+
+  .select-layout{display:flex;gap:26px;align-items:flex-start}
+  .select-main{flex:1;min-width:0}
+  .select-tray{
+    display:none;width:290px;flex:none;position:sticky;top:78px;max-height:calc(100vh - 100px);overflow-y:auto;
+    background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow);
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .select-tray.drop-hover{background:var(--accent-soft);border-color:var(--accent)}
+  @media (min-width: 960px){
+    .select-tray{display:block}
+    .footer-tray-mobile{display:none !important}
+  }
+  .select-tray h3{font-size:14.5px;margin:0 0 4px;font-weight:800}
+  .select-tray .tray-sub{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px}
+  .tray-count-pill{display:inline-flex;align-items:center;gap:5px;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:13px;padding:5px 12px;border-radius:99px;margin-bottom:12px}
+  .tray-count-pill.full{background:var(--good-soft);color:var(--good)}
+  .tray-count-pill.over{background:var(--accent2-soft);color:var(--accent2)}
+  #footerTray.drop-hover{background:var(--accent-soft);border-radius:12px}
+
+  .block-section{margin-bottom:32px}
+  .block-head{margin-bottom:14px}
+  .block-title{font-size:17px;font-weight:800;margin:0 0 2px}
+  .block-core{font-size:13.5px;color:var(--ink-soft);margin:0;max-width:560px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fill, minmax(148px, 1fr));gap:12px}
+  @media (min-width: 640px){ .cards{grid-template-columns:repeat(auto-fill, minmax(160px, 1fr))} }
+
+  .task-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;user-select:none;box-shadow:var(--shadow);transition:transform .18s ease, opacity .25s ease, border-color .15s ease}
+  .task-card:hover{transform:translateY(-2px)}
+  .task-card.disabled{cursor:not-allowed;opacity:.85}
+  .task-card.shake{animation:shake .35s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+  .card-media{position:relative;aspect-ratio:1.15/1;display:flex;align-items:center;justify-content:center;font-size:36px;transition:filter .25s ease}
+  .card-media .emoji{filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
+  .card-body{padding:10px 12px 13px}
+  .task-text{font-size:13.5px;font-weight:600;line-height:1.32;display:block}
+
+  .mode-remove .task-card.marked{transform:scale(.94);opacity:.55}
+  .mode-remove .task-card.marked .card-media{filter:grayscale(1) brightness(.6)}
+  .mode-remove .task-card.marked .task-text{text-decoration:line-through;color:var(--ink-soft)}
+  .mode-remove .task-card.marked{border-color:var(--bad)}
+  .remove-x{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:99px;background:rgba(255,255,255,.9);color:var(--bad);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;opacity:0;transform:scale(.5);transition:all .18s ease;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  .mode-remove .task-card.marked .remove-x{opacity:1;transform:scale(1)}
+  .remove-stamp{position:absolute;left:-14%;top:38%;width:128%;background:var(--bad);color:#fff;font-size:11px;font-weight:800;letter-spacing:.3px;text-align:center;padding:3px 0;transform:rotate(-11deg) scale(.7);opacity:0;transition:all .2s ease;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .mode-remove .task-card.marked .remove-stamp{opacity:1;transform:rotate(-11deg) scale(1)}
+
+  .mode-select .task-card{cursor:grab}
+  .mode-select .task-card:active{cursor:grabbing}
+  .mode-select .task-card.marked{border-color:var(--good);transform:translateY(-3px)}
+  .mode-select .task-card.marked .card-media{filter:saturate(1.25)}
+  .select-check{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:99px;background:var(--good);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;opacity:0;transform:scale(.5);transition:all .18s ease;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  .mode-select .task-card.marked .select-check{opacity:1;transform:scale(1)}
+  .select-ring{position:absolute;inset:0;border-radius:16px;border:3px solid var(--good);opacity:0;transition:opacity .18s ease;pointer-events:none}
+  .mode-select .task-card.marked .select-ring{opacity:1}
+  .select-num{position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:99px;background:var(--good);color:#fff;font-size:11px;font-weight:800;display:none;align-items:center;justify-content:center}
+  .mode-select .task-card.marked .select-num{display:flex}
+
+  .mode-select .task-card.marked.excess{border-color:var(--accent2)}
+  .mode-select .task-card.marked.excess .select-check{background:var(--accent2)}
+  .mode-select .task-card.marked.excess .select-ring{border-color:var(--accent2)}
+  .mode-select .task-card.marked.excess .select-num{background:var(--accent2)}
+  .excess-tag{position:absolute;left:-14%;bottom:10%;top:auto;width:128%;background:var(--accent2);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.3px;text-align:center;padding:3px 0;transform:rotate(-11deg) scale(.7);opacity:0;transition:all .2s ease;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .mode-select .task-card.marked.excess .excess-tag{opacity:1;transform:rotate(-11deg) scale(1)}
+  .task-card.drag-ghost{opacity:.35}
+
+  .hint-banner{background:var(--accent-soft);color:var(--accent);border-radius:14px;padding:14px 16px;font-size:14px;font-weight:600;margin-bottom:20px;line-height:1.4}
+  .hint-banner.neutral{background:var(--surface-2);color:var(--ink)}
+  .hint-banner b{font-weight:800}
+
+  .removed-list{display:flex;flex-direction:column;gap:8px;margin:14px 0 4px}
+  .removed-item{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:12px;padding:10px 12px}
+  .removed-item .ri-emoji{font-size:18px}
+  .removed-item span{flex:1;font-size:14px;color:var(--ink-soft);text-decoration:line-through}
+  .removed-empty{color:var(--ink-soft);font-size:14px;padding:8px 0}
+
+  .final-emoji{font-size:38px;margin-bottom:8px}
+  .level-badge{display:inline-block;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:13px;padding:6px 14px;border-radius:99px;margin:6px 0 2px}
+  .thanks-line{font-size:20px;font-weight:800;color:var(--ink);margin:24px auto 0}
+  .send-status{font-size:13px;margin-top:10px;display:flex;align-items:center;gap:6px;justify-content:center}
+  .send-status.ok{color:var(--good)}
+  .send-status.pending{color:var(--ink-soft)}
+  .send-status.err{color:var(--bad)}
+
+  .center{text-align:center}
+  .muted{color:var(--ink-soft);font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand" id="brandEl"><span class="avatar neutral" id="topAvatar">🗂️<span class="avatar-badge" id="topBadge">0</span></span> <span id="brandText">Разбор задач</span></div>
+    <div class="progress"><div id="progressFill" style="width:5%"></div></div>
+    <div class="step-label" id="stepLabel">Начало</div>
+  </div>
+</div>
+
+<div id="app"></div>
+
+<div class="footer-bar" id="footerBar" style="display:none">
+  <div class="footer-inner">
+    <div class="footer-row">
+      <div class="footer-count" id="footerCount"></div>
+      <div id="footerActions" style="display:flex;gap:8px"></div>
+    </div>
+    <div class="tray-rows footer-tray-mobile" id="footerTray" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+/* ======================= НАСТРОЙКА ======================= */
+// URL веб-приложения Google Apps Script (см. инструкцию в AppsScript.gs).
+const SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwxqyML5L-i_lFFzk8hAqyEkZyy3QHrBso40q4XWUUOTF1Ukq8vPV4qltu4XkOea8nz/exec";
+
+const RESPONDENT_PARAM_NAMES = ["uid", "respondent", "respondent_id", "panelist_id", "id", "sid", "user_id", "code"];
+const BLOCKS_PER_SESSION = 3;
+const BALANCE_POOL_SIZE = 8;
+const MAX_AI_PICKS = 5;
+
+/* ======================= ДАННЫЕ ======================= */
+const BLOCKS_RAW = [{"id":"shopping","title":"Покупки товаров и услуг","color":"#E8734A","core":"Выбирать товары и услуги по выгодной цене, не обходя магазины и не тратя часы на сравнение","items":[["Найти тот же товар дешевле, не обходя магазины","🏷️"],["Понять, чем отличаются похожие модели, чтобы не переплатить","🔍"],["Убедиться, что продавец надёжен, перед оплатой","🛡️"],["Узнать, какие бонусы, промокоды и кешбэк можно применить","🎟️"],["Проверить наличие и срок доставки, прежде чем решиться на покупку","📦"],["Решить, что делать, если товар не подошёл: вернуть, обменять, продать","🔄"],["Сделать выбор, когда вариантов много, а мнения о них противоречивы","🤔"]]},{"id":"food","title":"Еда и питание","color":"#D9A441","core":"Кормить себя и семью разнообразно, используя то, что есть под рукой, без ежедневного планирования","items":[["Придумать, что приготовить из того, что есть дома","🍳"],["Найти проверенный рецепт под свои условия и технику","📖"],["Понять, как заменить продукт или ингредиент, если его нет под рукой","🔁"],["Рассчитать порции и закупку продуктов на неделю или на заготовки","🧮"],["Учесть ограничения семьи при готовке: аллергии, возраст, диету","🥗"],["Сохранить удачный рецепт, чтобы повторить его позже","⭐"]]},{"id":"health","title":"Здоровье","color":"#4A9D8F","core":"Понимать, что происходит со здоровьем и что делать дальше, не оставаясь один на один с медицинским языком","items":[["Понять, о чём говорят результаты анализов и обследований","🩺"],["Разобраться, что означает назначение врача и как принимать препарат","💊"],["Подготовить вопросы врачу и запомнить его рекомендации","📋"],["Понять, к какому специалисту идти и как быстро это нужно сделать","🏥"],["Проверить совместимость и дозировку препаратов, прежде чем их принимать","⚗️"],["Проследить результат лечения и понять, помогло ли оно","📈"],["Проверить симптом или препарат до визита к врачу и покупки в аптеке","🤒"],["Получить эмоциональную поддержку","💙"],["Снизить тревогу в сложной ситуации","🧘"]]},{"id":"home","title":"Дом и уборка","color":"#8B6F47","core":"Поддерживать дом в порядке и решать бытовые поломки, не превращая это в отдельную работу","items":[["Понять, как убрать пятно, запах или налёт доступными средствами","🧽"],["Разобраться, как работает бытовая техника и что с ней не так","🔧"],["Спланировать уборку и распределить дела по дому","🧹"],["Подобрать материалы и оценить стоимость ремонта","🧱"],["Найти мастера или сервис и понять, не завышена ли цена","👷"],["Не забыть про регулярные дела: фильтры, показания счётчиков, обслуживание","⏰"]]},{"id":"kids","title":"Дети и школа","color":"#5B8DD9","core":"Вести ребёнка через учёбу и режим, помогая разобраться, а не подменяя его","items":[["Помочь ребёнку разобраться с задачей, не решая её за него","🎒"],["Ответить на неожиданный детский вопрос понятным языком","💬"],["Собрать ребёнка в школу или детский сад по списку","🏫"],["Настроить режим сна, питания и занятий ребёнка","🕐"],["Найти занятие или секцию под интересы ребёнка","⚽"],["Понять, что происходит у ребёнка в школе, и разобраться, как помочь","📚"],["Контролировать, что ребёнок делает с ИИ и в интернете","👀"],["Занять ребёнка сказкой, игрой или интересным вопросом","🧸"]]},{"id":"family","title":"Семья и близкие","color":"#D9587A","core":"Заботиться о близких и поддерживать отношения, не забывая важное","items":[["Выбрать подарок, который понравится и не разорит","🎁"],["Подготовиться к сложному разговору и найти нужные слова","🗣️"],["Помочь старшему родственнику с телефоном, услугами и документами","👵"],["Организовать семейное событие или совместную поездку","🎉"],["Поздравить близких так, чтобы это звучало искренне","💌"],["Не забывать о днях рождения и важных датах","📅"],["Помочь близкому человеку разобраться в его собственном вопросе","🤝"]]},{"id":"finance","title":"Финансы и платежи","color":"#4A8B5C","core":"Контролировать деньги семьи и пользоваться всеми положенными выгодами без риска","items":[["Понять, за что списали деньги, и отключить лишнее","💳"],["Узнать, какие бонусы, кешбэк и льготы положены","💰"],["Разобраться с налогами и платежами при самозанятости или ИП","🧾"],["Понять, куда вложить или как сохранить деньги","📊"],["Посчитать крупную покупку или кредит и сравнить варианты","⚖️"],["Держать бюджет семьи под контролем и видеть траты","🪙"],["Проверить, не обманывают ли с ценой или условиями сделки","🕵️"]]},{"id":"tech","title":"Техника и авто","color":"#6B6ED4","core":"Поддерживать устройства и машину в рабочем состоянии, понимая, что чинить и кому доверять","items":[["Понять причину неполадки в технике и что делать в первую очередь","⚡"],["Настроить устройство, приложение или подписку по шагам","⚙️"],["Сравнить модели техники перед покупкой","📱"],["Проверить, не обманул ли мастер или сервис с ремонтом","✅"],["Разобраться с автомобилем: расходники, ремонт, документы","🚗"],["Найти выход, когда привычный сервис не работает или заблокирован","🚧"]]},{"id":"travel","title":"Поездки","color":"#3FA7C7","core":"Организовывать поездки под свои условия, без часов на сбор маршрута и бюджета","items":[["Собрать маршрут поездки по дням под свои интересы и время","🗺️"],["Посчитать бюджет поездки","💰"],["Сравнить варианты жилья","🏨"],["Найти, что рядом с отелем: еда, аптеки, транспорт","📍"],["Понять, нужны ли для поездки документы, визы и страховки","🛂"],["Спланировать поездку с детьми или старшими родственниками","👨‍👩‍👧"]]},{"id":"pets","title":"Питомцы","color":"#C47A3D","core":"Заботиться о питомце, понимая, что с ним и к кому обращаться","items":[["Понять, что с питомцем и насколько это срочно","🐾"],["Найти ветеринара рядом и записаться на приём","🐕‍🦺"],["Разобраться с назначениями и уходом после визита к ветеринару","🧴"],["Подобрать корм, препарат или аксессуар для питомца дешевле","🍖"],["Ухаживать за питомцем по расписанию: прививки, обработки, купание","🛁"],["Понять породу, характер и особенности поведения питомца","🐱"]]},{"id":"docs","title":"Документы и госуслуги","color":"#7A6FA6","core":"Оформлять документы и получать положенное без ошибок и лишних визитов","items":[["Понять, какие документы нужны для конкретной ситуации","📄"],["Заполнить заявление или форму без ошибок","✍️"],["Разобраться, почему услуга не работает или пришёл отказ","❗"],["Получить положенную льготу или выплату","🏛️"],["Найти подтверждение требованиям в официальных источниках","🔎"]]},{"id":"routine","title":"Повседневная рутина","color":"#D9973F","core":"Вести день, получая нужные действия и справки голосом, не отвлекаясь на экран","items":[["Узнать погоду и понять, что надеть и взять с собой","☀️"],["Включить музыку, сказку или радио без долгого поиска","🎵"],["Поставить будильник, таймер или напоминание голосом","⏱️"],["Дать команду, чтобы управлять умным домом: включить устройство, свет","💡"],["Запланировать список дел","📝"],["Получить напоминания о списке дел на сегодня","🔔"]]},{"id":"leisure","title":"Досуг и медиа","color":"#B84FA0","core":"Находить, что посмотреть, послушать и во что поиграть, под настроение и компанию","items":[["Выбрать фильм или сериал под настроение и компанию","🎬"],["Узнать, где и когда идёт то, что хочется посмотреть","📺"],["Найти музыку, подкаст или книгу под настроение","🎧"],["Придумать досуг для семьи или компании","🎲"],["Поиграть во что-то новое, не разбираясь заранее в правилах","🕹️"],["Попробовать развлекательные практики: гороскоп, гадание, тест личности","🔮"]]},{"id":"work","title":"Работа","color":"#4A7FBF","core":"Производить рабочие тексты и документы, разбираться в профессиональных задачах и расти в карьере, не тратя на это лишние часы","items":[["Написать рабочий текст: пост, рассылку, описание товара, ответ клиенту","✉️"],["Составить документ: претензию, договор, регламент, отчёт","📃"],["Отредактировать и проверить текст: стиль, пунктуацию, лишние обороты","✂️"],["Извлечь и структурировать данные из документов и сканов","🗃️"],["Сделать презентацию, таблицу или расчёт для клиента или руководства","📽️"],["Получить помощь с кодом, сайтом или автоматизацией задачи","💻"],["Разобраться в профессиональном вопросе: метрике, нормативе, инструменте","🧠"],["Составить рабочий план, инструкцию или регламент","🗓️"],["Подготовиться к новой роли: резюме, собеседование, обучение","🎯"],["Ответить клиенту или на отзыв вежливо и по правилам","📨"]]},{"id":"creative","title":"Творчество и памятные материалы","color":"#D65F8A","core":"Создавать контент и памятные материалы — изображения, видео, тексты — без профильных навыков и подрядчиков","items":[["Создать изображение: открытку, афишу, иллюстрацию, обложку","🎨"],["Отредактировать фото: убрать лишнее, поменять фон, улучшить качество","🖼️"],["Оживить или отреставрировать семейное фото или видео","🎞️"],["Написать творческий текст: сценарий, поздравление, шуточный текст","✒️"],["Придумать контент для блога или продвижения: идею, план, обложку","📸"]]},{"id":"learning","title":"Обучение","color":"#6E5FCE","core":"Разбираться в новом и справляться с учебными задачами, получая понятное объяснение, а не просто готовый ответ","items":[["Разобраться в незнакомой теме: слове, термине, событии, явлении","🧩"],["Проверить факт или утверждение — от продавца, знакомого, СМИ","🔬"],["Получить объяснение, разбор или конспект по теме","🧑‍🏫"],["Составить саммари (краткую выжимку)","🗒️"],["Получить помощь в выполнении учебной задачи","✏️"],["Найти готовый ответ или решение","🔑"]]}];
+const BLOCKS = BLOCKS_RAW.map(b => ({ ...b, items: b.items.map(pair => ({ text: pair[0], icon: pair[1] })) }));
+
+/* ======================= УТИЛИТЫ ======================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function esc(s){ return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function uuid(){
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => { const r = Math.random()*16|0, v = c==="x"?r:(r&0x3|0x8); return v.toString(16); });
+}
+function getRespondentCodeFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  for (const name of RESPONDENT_PARAM_NAMES){ const val = params.get(name); if (val) return val; }
+  return "";
+}
+
+/* ======= Балансировка показов блоков между респондентами ======= */
+async function fetchImpressionCounts(){
+  if (!SHEET_WEBHOOK_URL) return {};
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+    const res = await fetch(SHEET_WEBHOOK_URL, { method: "GET", signal: controller.signal });
+    clearTimeout(timer);
+    const data = await res.json();
+    return (data && data.counts) ? data.counts : {};
+  } catch (e){ return {}; }
+}
+function pickBalancedBlocks(counts){
+  const withCounts = shuffle(BLOCKS.map(b => ({ block: b, count: counts[b.id] || 0 })));
+  withCounts.sort((a, b) => a.count - b.count);
+  const poolSize = Math.min(BALANCE_POOL_SIZE, BLOCKS.length);
+  const pool = shuffle(withCounts.slice(0, poolSize)).map(x => x.block);
+  return pool.slice(0, Math.min(BLOCKS_PER_SESSION, BLOCKS.length));
+}
+function sendImpression(chosenBlocks){
+  if (!SHEET_WEBHOOK_URL) return;
+  const payload = { type: "impression", session_id: state.sessionId, respondent_code: state.respondentCode || null, blocks: chosenBlocks.map(b => b.id) };
+  fetch(SHEET_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }).catch(() => {});
+}
+function sendResult(payload){
+  if (!SHEET_WEBHOOK_URL) return Promise.resolve("skipped");
+  return fetch(SHEET_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "result", ...payload }) })
+    .then(() => "ok").catch(() => "err");
+}
+
+/* ======= Лог поведения (что и когда выбирали/отключали) ======= */
+function logAction(action, item){
+  state.actionLog.push({
+    t: new Date().toISOString(),
+    ms: Date.now() - state.sessionStartMs,
+    phase: state.phase,
+    action: action,
+    block: item ? item.blockTitle : "",
+    item: item ? item.text : ""
+  });
+}
+function flushActionLog(){
+  if (!SHEET_WEBHOOK_URL) return;
+  const unsent = state.actionLog.slice(state.actionLogSent);
+  if (unsent.length === 0) return;
+  const payload = { type: "actions", session_id: state.sessionId, respondent_code: state.respondentCode || null, entries: unsent };
+  state.actionLogSent = state.actionLog.length;
+  fetch(SHEET_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }).catch(() => {});
+}
+// Подстраховка на случай, если респондент закрывает вкладку/уходит со страницы, не дойдя
+// до конца — sendBeacon доставляется даже при выгрузке страницы.
+function flushActionLogBeacon(){
+  if (!SHEET_WEBHOOK_URL || !navigator.sendBeacon) return;
+  const unsent = state.actionLog.slice(state.actionLogSent);
+  if (unsent.length === 0) return;
+  const payload = { type: "actions", session_id: state.sessionId, respondent_code: state.respondentCode || null, entries: unsent };
+  state.actionLogSent = state.actionLog.length;
+  try {
+    const blob = new Blob([JSON.stringify(payload)], { type: "text/plain;charset=utf-8" });
+    navigator.sendBeacon(SHEET_WEBHOOK_URL, blob);
+  } catch (e){}
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) flushActionLogBeacon(); });
+window.addEventListener("pagehide", flushActionLogBeacon);
+
+/* ======================= СОСТОЯНИЕ ======================= */
+const state = {
+  phase: "intro",
+  sessionId: uuid(),
+  respondentCode: getRespondentCodeFromUrl(),
+  chosenBlocks: [],
+  workingSet: [],
+  revealed: false,
+  selectionOrder: [],
+  sessionStartMs: Date.now(),
+  actionLog: [],
+  actionLogSent: 0
+};
+
+function buildWorkingSetFromChosen(chosen){
+  state.chosenBlocks = chosen;
+  const set = [];
+  chosen.forEach(block => {
+    shuffle(block.items).forEach((it, idx) => {
+      set.push({ id: block.id + "-" + idx, block: block.id, blockTitle: block.title, blockColor: block.color, text: it.text, icon: it.icon, removed: false, selected: false });
+    });
+  });
+  state.workingSet = set;
+  state.selectionOrder = [];
+}
+
+function getSelectedItemsOrdered(){
+  return state.selectionOrder
+    .map(id => state.workingSet.find(i => i.id === id))
+    .filter(Boolean);
+}
+function toggleSelection(item){
+  if (item.selected){
+    item.selected = false;
+    const idx = state.selectionOrder.indexOf(item.id);
+    if (idx !== -1) state.selectionOrder.splice(idx, 1);
+  } else {
+    item.selected = true;
+    state.selectionOrder.push(item.id);
+  }
+}
+function selectItem(item){
+  if (item.selected) return;
+  item.selected = true;
+  state.selectionOrder.push(item.id);
+}
+
+/* ======================= РЕНДЕР ======================= */
+const app = document.getElementById("app");
+const progressFill = document.getElementById("progressFill");
+const stepLabel = document.getElementById("stepLabel");
+const footerBar = document.getElementById("footerBar");
+const footerCount = document.getElementById("footerCount");
+const footerActions = document.getElementById("footerActions");
+const footerTray = document.getElementById("footerTray");
+const topAvatar = document.getElementById("topAvatar");
+const topBadge = document.getElementById("topBadge");
+const brandText = document.getElementById("brandText");
+
+function setProgress(pct, label){ progressFill.style.width = pct + "%"; stepLabel.textContent = label; }
+function updateTopBadge(n){
+  if (n > 0){ topBadge.textContent = n; topBadge.classList.add("show"); }
+  else { topBadge.classList.remove("show"); }
+}
+function updateTopbarIdentity(){
+  if (state.revealed){
+    topAvatar.classList.remove("neutral");
+    topAvatar.innerHTML = "🤖" + '<span class="avatar-badge" id="topBadge">0</span>';
+    brandText.textContent = "Навыки ИИ";
+  } else {
+    topAvatar.classList.add("neutral");
+    topAvatar.innerHTML = "🗂️" + '<span class="avatar-badge" id="topBadge">0</span>';
+    brandText.textContent = "Разбор задач";
+  }
+}
+
+function render(){
+  footerBar.style.display = "none";
+  footerActions.innerHTML = "";
+  footerTray.style.display = "none";
+  footerTray.innerHTML = "";
+  updateTopbarIdentity();
+  if (state.phase === "intro") return renderIntro();
+  if (state.phase === "remove") return renderRemove();
+  if (state.phase === "confirmRemove") return renderConfirmRemove();
+  if (state.phase === "stage2Intro") return renderStage2Intro();
+  if (state.phase === "select") return renderSelect();
+  if (state.phase === "confirmSelect") return renderConfirmSelect();
+  if (state.phase === "finalFew") return renderFinal(true);
+  if (state.phase === "finalDone") return renderFinal(false);
+}
+
+function renderIntro(){
+  setProgress(4, "Начало");
+  updateTopBadge(0);
+  app.innerHTML = `
+    <div class="wrap-narrow">
+      <div class="hero neutral">
+        <div class="hero-avatar neutral">🗂️</div>
+        <h1 style="margin-bottom:8px">Расскажите, какие повседневные и рабочие задачи вам близки</h1>
+        <p class="lede center" style="margin:0 auto">Это займёт пару минут и пройдёт в два этапа. Сначала разберём список тем и уберём то, что вам совсем не подходит — а дальше будет интереснее.</p>
+      </div>
+      <div class="steps-mini">
+        <div class="s"><div class="num">1</div>Уберите темы и задачи, которые вам не близки</div>
+        <div class="s"><div class="num">2</div>Выберите наиболее важные из оставшихся</div>
+      </div>
+    </div>
+  `;
+  footerBar.style.display = "block";
+  footerCount.textContent = "";
+  const btn = document.createElement("button");
+  btn.className = "btn btn-primary btn-block";
+  btn.textContent = "Начать →";
+  btn.onclick = async () => {
+    btn.disabled = true;
+    btn.textContent = "Готовим список…";
+    const counts = await fetchImpressionCounts();
+    const chosen = pickBalancedBlocks(counts);
+    buildWorkingSetFromChosen(chosen);
+    sendImpression(chosen);
+    state.phase = "remove";
+    render();
+  };
+  footerActions.appendChild(btn);
+  footerActions.style.flex = "1";
+}
+
+function cardHtml(i, opts){
+  opts = opts || {};
+  const draggableAttr = opts.draggable ? ` draggable="true"` : "";
+  return `
+    <div class="task-card" data-id="${i.id}"${draggableAttr}>
+      <div class="card-media" style="background:${i.blockColor}22">
+        <span class="emoji">${i.icon}</span>
+        <span class="remove-x">✕</span>
+        <span class="remove-stamp">убрано</span>
+        <span class="select-check">✓</span>
+        <span class="select-num"></span>
+        <span class="select-ring"></span>
+        <span class="excess-tag">лишняя</span>
+      </div>
+      <div class="card-body"><span class="task-text">${esc(i.text)}</span></div>
+    </div>
+  `;
+}
+
+function renderRemove(){
+  setProgress(28, "Этап 1 из 2");
+  const total = state.workingSet.length;
+  let html = `
+    <div class="wrap">
+    <div class="stage-tag" style="background:var(--surface-2);color:var(--ink-soft)">Этап 1 · Отбор тем</div>
+    <h1>Уберите то, что вам не близко</h1>
+    <div class="hint-banner neutral">Уберите <b>темы, которые вам совсем не близки</b>, а также задачи, с которыми вы сталкиваетесь <b>очень редко или не сталкиваетесь вовсе</b>. Всё остальное просто оставьте — оно понадобится на следующем этапе.</div>
+  `;
+  state.chosenBlocks.forEach(block => {
+    const items = state.workingSet.filter(i => i.block === block.id);
+    html += `
+      <div class="block-section">
+        <div class="block-head"><p class="block-title">${esc(block.title)}</p><p class="block-core">${esc(block.core)}</p></div>
+        <div class="cards mode-remove" data-block="${block.id}">${items.map(i=>cardHtml(i)).join("")}</div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+  app.innerHTML = html;
+
+  app.querySelectorAll(".mode-remove .task-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const item = state.workingSet.find(i => i.id === card.dataset.id);
+      item.removed = !item.removed;
+      card.classList.toggle("marked", item.removed);
+      logAction(item.removed ? "remove" : "unremove", item);
+      updateRemoveFooter();
+    });
+  });
+
+  footerBar.style.display = "block";
+  const nextBtn = document.createElement("button");
+  nextBtn.className = "btn btn-primary";
+  nextBtn.textContent = "Далее →";
+  nextBtn.onclick = () => { flushActionLog(); state.phase = "confirmRemove"; render(); window.scrollTo(0,0); };
+  footerActions.appendChild(nextBtn);
+  updateRemoveFooter();
+
+  function updateRemoveFooter(){
+    const rc = state.workingSet.filter(i => i.removed).length;
+    footerCount.innerHTML = `Убрано: <b>${rc}</b> из ${total}`;
+  }
+}
+
+function renderConfirmRemove(){
+  setProgress(45, "Проверка");
+  const removed = state.workingSet.filter(i => i.removed);
+  const kept = state.workingSet.filter(i => !i.removed);
+  app.innerHTML = `
+    <div class="wrap-narrow">
+    <h1>Проверьте список перед тем, как продолжить</h1>
+    <p class="lede">Эти задачи вы выбрали как релевантные и присутствующие в вашей жизни. Если что-то лишнее — уберите прямо здесь.</p>
+    <div class="card-box">
+      <div class="removed-list">
+        ${kept.length === 0
+          ? `<div class="removed-empty">Вы убрали всё — релевантных задач не осталось.</div>`
+          : kept.map(i => `
+            <div class="removed-item" data-id="${i.id}">
+              <span class="ri-emoji">${i.icon}</span>
+              <span style="text-decoration:none;color:var(--ink)">${esc(i.text)}</span>
+              <button class="btn btn-ghost btn-sm" data-drop="${i.id}">Убрать</button>
+            </div>
+          `).join("")}
+      </div>
+    </div>
+
+    <p class="lede" style="margin-bottom:10px">А эти вы отметили как неблизкие или очень редкие — если что-то попало сюда случайно, верните.</p>
+    <div class="card-box">
+      <div class="removed-list">
+        ${removed.length === 0
+          ? `<div class="removed-empty">Вы ничего не убрали.</div>`
+          : removed.map(i => `
+            <div class="removed-item" data-id="${i.id}">
+              <span class="ri-emoji">${i.icon}</span>
+              <span>${esc(i.text)}</span>
+              <button class="btn btn-ghost btn-sm" data-restore="${i.id}">Вернуть</button>
+            </div>
+          `).join("")}
+      </div>
+    </div>
+    </div>
+  `;
+
+  app.querySelectorAll("[data-restore]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const item = state.workingSet.find(i => i.id === btn.dataset.restore);
+      item.removed = false;
+      logAction("restore_on_confirm", item);
+      render();
+    });
+  });
+  app.querySelectorAll("[data-drop]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const item = state.workingSet.find(i => i.id === btn.dataset.drop);
+      item.removed = true;
+      logAction("remove_on_confirm", item);
+      render();
+    });
+  });
+
+  footerBar.style.display = "block";
+  footerCount.textContent = "Проверьте список перед тем, как продолжить";
+  const backBtn = document.createElement("button");
+  backBtn.className = "btn btn-ghost";
+  backBtn.textContent = "← Назад";
+  backBtn.onclick = () => { flushActionLog(); state.phase = "remove"; render(); window.scrollTo(0,0); };
+
+  const confirmBtn = document.createElement("button");
+  confirmBtn.className = "btn btn-primary";
+  confirmBtn.textContent = "Всё верно, дальше";
+  confirmBtn.onclick = () => {
+    flushActionLog();
+    const keptNow = state.workingSet.filter(i => !i.removed);
+    state.phase = keptNow.length < 5 ? "finalFew" : "stage2Intro";
+    render();
+    window.scrollTo(0,0);
+  };
+  footerActions.appendChild(backBtn);
+  footerActions.appendChild(confirmBtn);
+}
+
+function renderStage2Intro(){
+  setProgress(60, "Этап 2 из 2");
+  state.revealed = true;
+  updateTopbarIdentity();
+  const kept = state.workingSet.filter(i => !i.removed).length;
+  app.innerHTML = `
+    <div class="wrap-narrow">
+      <div class="hero" style="animation:none">
+        <div class="hero-avatar" style="animation:popIn .5s ease">🤖</div>
+        <div class="stage-tag">Этап 2 · Навыки ИИ-помощника</div>
+        <h1 style="margin-bottom:8px">А теперь — соберите Навыки для ИИ-помощника</h1>
+        <p class="lede center" style="margin:0 auto">
+          Из ${kept} оставшихся задач выберите <b>не более 5 самых важных</b> — тех, которые вы уже решаете с помощью нейросети или хотели бы ей доверить. Выбранное станет Навыками вашего помощника.
+        </p>
+      </div>
+    </div>
+  `;
+  footerBar.style.display = "block";
+  footerCount.textContent = "";
+  const btn = document.createElement("button");
+  btn.className = "btn btn-primary btn-block";
+  btn.textContent = "Собрать Навыки →";
+  btn.onclick = () => { state.phase = "select"; render(); window.scrollTo(0,0); };
+  footerActions.appendChild(btn);
+  footerActions.style.flex = "1";
+}
+
+function trayRowsHtml(orderedItems){
+  if (orderedItems.length === 0) return `<div class="tray-empty">Пока пусто — нажимайте на карточки или перетащите их сюда.</div>`;
+  return orderedItems.map((i, idx) => {
+    const isExcess = idx >= MAX_AI_PICKS;
+    return `
+    <div class="tray-row${isExcess ? " excess" : ""}" data-id="${i.id}">
+      <span class="tr-emoji">${i.icon}</span>
+      <span class="tr-text">${esc(i.text)}${isExcess ? '<span class="tray-flag">лишняя</span>' : ""}</span>
+      <button class="tr-remove" data-untray="${i.id}">✕</button>
+    </div>
+  `;
+  }).join("");
+}
+
+function renderSelect(){
+  setProgress(80, "Этап 2 из 2");
+  const kept = state.workingSet.filter(i => !i.removed);
+  const byBlock = {};
+  kept.forEach(i => { (byBlock[i.block] = byBlock[i.block] || []).push(i); });
+
+  let mainHtml = `
+    <h1>Соберите Навыки ИИ-помощника</h1>
+    <div class="hint-banner">Подумайте о задачах, которые вы уже решаете с помощью нейросети — или хотели бы ей доверить. Затем выберите <b>самые важные из них</b> — те, с которыми ИИ должен справляться максимально правильно, просто и быстро. Карточки можно отмечать кликом или перетаскивать в панель.</div>
+  `;
+  state.chosenBlocks.forEach(block => {
+    const items = byBlock[block.id];
+    if (!items || items.length === 0) return;
+    mainHtml += `
+      <div class="block-section">
+        <div class="block-head"><p class="block-title">${esc(block.title)}</p></div>
+        <div class="cards mode-select" data-block="${block.id}">${items.map(i=>cardHtml(i, {draggable:true})).join("")}</div>
+      </div>
+    `;
+  });
+
+  app.innerHTML = `
+    <div class="wrap">
+      <div class="select-layout">
+        <div class="select-main">${mainHtml}</div>
+        <aside class="select-tray" id="desktopTray">
+          <h3>Навыки ИИ-помощника</h3>
+          <p class="tray-sub">Кликните по карточке или перетащите её сюда</p>
+          <div class="tray-count-pill" id="trayPill">0 / ${MAX_AI_PICKS}</div>
+          <div id="desktopTrayRows"></div>
+        </aside>
+      </div>
+    </div>
+  `;
+
+  function paintNumbers(){
+    const map = {};
+    state.selectionOrder.forEach((id, idx) => { map[id] = idx + 1; });
+    app.querySelectorAll(".mode-select .task-card").forEach(card => {
+      const n = map[card.dataset.id];
+      const numEl = card.querySelector(".select-num");
+      if (n) numEl.textContent = n;
+      card.classList.toggle("excess", !!n && n > MAX_AI_PICKS);
+      card.classList.toggle("marked", !!n);
+    });
+  }
+
+  app.querySelectorAll(".mode-select .task-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const item = state.workingSet.find(i => i.id === card.dataset.id);
+      toggleSelection(item);
+      card.classList.toggle("marked", item.selected);
+      logAction(item.selected ? "select_click" : "deselect_click", item);
+      paintNumbers();
+      updateSelectUI();
+    });
+    card.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", card.dataset.id);
+      e.dataTransfer.effectAllowed = "copy";
+      card.classList.add("drag-ghost");
+    });
+    card.addEventListener("dragend", () => card.classList.remove("drag-ghost"));
+  });
+
+  function handleDropOnTray(e, zoneEl){
+    e.preventDefault();
+    zoneEl.classList.remove("drop-hover");
+    const id = e.dataTransfer.getData("text/plain");
+    const item = state.workingSet.find(i => i.id === id);
+    if (!item) return;
+    const wasSelected = item.selected;
+    selectItem(item);
+    if (!wasSelected) logAction("select_drag", item);
+    const card = app.querySelector(`.task-card[data-id="${item.id}"]`);
+    if (card) card.classList.add("marked");
+    paintNumbers();
+    updateSelectUI();
+  }
+  [document.getElementById("desktopTray"), footerBar].forEach(zone => {
+    if (!zone) return;
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; zone.classList.add("drop-hover"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("drop-hover"));
+    zone.addEventListener("drop", (e) => handleDropOnTray(e, zone));
+  });
+
+  footerBar.style.display = "block";
+  const finishBtn = document.createElement("button");
+  finishBtn.className = "btn btn-primary";
+  finishBtn.id = "finishBtn";
+  finishBtn.textContent = "Готово, собрать Навыки";
+  finishBtn.onclick = () => { flushActionLog(); state.phase = "confirmSelect"; render(); window.scrollTo(0,0); };
+  footerActions.appendChild(finishBtn);
+  footerTray.style.display = "flex";
+  paintNumbers();
+  updateSelectUI();
+
+  function updateSelectUI(){
+    const orderedItems = getSelectedItemsOrdered();
+    const n = orderedItems.length;
+    const over = n > MAX_AI_PICKS;
+    footerCount.innerHTML = over
+      ? `Выбрано: <b>${n}</b> — ${n - MAX_AI_PICKS} сверх важных, стоит убрать лишние`
+      : `Поручено ИИ: <b>${n}</b> из ${MAX_AI_PICKS} самых важных`;
+    footerCount.classList.toggle("warn", over);
+    updateTopBadge(n);
+
+    const pill = document.getElementById("trayPill");
+    if (pill){
+      pill.textContent = `${n} / ${MAX_AI_PICKS}`;
+      pill.classList.toggle("full", n === MAX_AI_PICKS);
+      pill.classList.toggle("over", over);
+    }
+    const dRows = document.getElementById("desktopTrayRows");
+    if (dRows) dRows.innerHTML = trayRowsHtml(orderedItems);
+    footerTray.innerHTML = trayRowsHtml(orderedItems);
+
+    document.querySelectorAll("[data-untray]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const item = state.workingSet.find(i => i.id === btn.dataset.untray);
+        toggleSelection(item);
+        logAction("deselect_tray", item);
+        const card = app.querySelector(`.task-card[data-id="${item.id}"]`);
+        if (card) card.classList.remove("marked");
+        paintNumbers();
+        updateSelectUI();
+      });
+    });
+  }
+}
+
+function renderConfirmSelect(){
+  setProgress(92, "Проверка Навыков");
+  const ordered = getSelectedItemsOrdered();
+  const n = ordered.length;
+  const over = n > MAX_AI_PICKS;
+  app.innerHTML = `
+    <div class="wrap-narrow">
+    <h1>Подтвердите набор Навыков</h1>
+    <p class="lede">Проверьте ещё раз: это именно те задачи, которые вы хотите видеть удобными, простыми и максимально верными при работе с ИИ-помощником. Если что-то лишнее — уберите прямо здесь.</p>
+    <div class="card-box">
+      <div class="tray-count-pill${n === MAX_AI_PICKS ? " full" : ""}${over ? " over" : ""}" style="margin-bottom:14px">${n} / ${MAX_AI_PICKS}</div>
+      <div class="tray-rows" style="border-top:none;margin-top:0;padding-top:0">${trayRowsHtml(ordered)}</div>
+    </div>
+    </div>
+  `;
+
+  app.querySelectorAll("[data-untray]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const item = state.workingSet.find(i => i.id === btn.dataset.untray);
+      toggleSelection(item);
+      logAction("deselect_on_confirm", item);
+      render();
+    });
+  });
+
+  footerBar.style.display = "block";
+  footerCount.innerHTML = over
+    ? `Уберите <b>${n - MAX_AI_PICKS}</b> лишних, чтобы оставить самые важные`
+    : "Всё верно? Список можно поправить в любой момент";
+  footerCount.classList.toggle("warn", over);
+
+  const backBtn = document.createElement("button");
+  backBtn.className = "btn btn-ghost";
+  backBtn.textContent = "← Назад";
+  backBtn.onclick = () => { state.phase = "select"; render(); window.scrollTo(0,0); };
+
+  const confirmBtn = document.createElement("button");
+  confirmBtn.className = "btn btn-primary";
+  confirmBtn.textContent = "Да, это те задачи →";
+  confirmBtn.onclick = () => { flushActionLog(); state.phase = "finalDone"; render(); window.scrollTo(0,0); };
+  footerActions.appendChild(backBtn);
+  footerActions.appendChild(confirmBtn);
+}
+
+function buildResultPayload(){
+  const shown = state.workingSet.length;
+  const notRelevant = state.workingSet.filter(i => i.removed).length;
+  const relevant = shown - notRelevant;
+  const selected = state.workingSet.filter(i => !i.removed && i.selected).length;
+  const relevantNotSelected = relevant - selected;
+  const priorityMap = {};
+  state.selectionOrder.forEach((id, idx) => { priorityMap[id] = idx + 1; });
+  return {
+    session_id: state.sessionId,
+    respondent_code: state.respondentCode || null,
+    timestamp: new Date().toISOString(),
+    blocks_shown: state.chosenBlocks.map(b => b.title),
+    items: state.workingSet.map(i => ({
+      block: i.blockTitle,
+      text: i.text,
+      status: i.removed ? "not_relevant" : (i.selected ? "relevant_selected_ai" : "relevant_not_selected"),
+      priority: i.selected ? priorityMap[i.id] : null
+    })),
+    summary: { shown, not_relevant: notRelevant, relevant, selected_for_ai: selected, relevant_not_selected: relevantNotSelected }
+  };
+}
+
+function levelLabel(n){
+  const capped = Math.min(n, MAX_AI_PICKS);
+  if (capped === 0) return "Пока без поручений";
+  if (capped <= 2) return "Первый набор Навыков";
+  if (capped <= 4) return "Уверенный набор";
+  return "Полный комплект — 5 из 5";
+}
+
+function renderFinal(tooFew){
+  setProgress(100, "Готово");
+  flushActionLog();
+  const payload = buildResultPayload();
+  const s = payload.summary;
+  updateTopBadge(s.selected_for_ai);
+  const ordered = getSelectedItemsOrdered();
+
+  const skillsHtml = ordered.length === 0 ? "" : `
+    <div class="card-box">
+      <h3 style="margin:0 0 12px;font-size:15px">Навыки вашего ИИ-помощника</h3>
+      <div class="removed-list">
+        ${ordered.map((i, idx) => {
+          const isExcess = idx >= MAX_AI_PICKS;
+          return `
+          <div class="removed-item${isExcess ? " tray-row excess" : ""}" style="${isExcess ? "" : "background:var(--good-soft)"}">
+            <span class="ri-emoji">${i.icon}</span>
+            <span style="text-decoration:none;color:var(--ink)">${esc(i.text)}${isExcess ? '<span class="tray-flag">лишняя</span>' : ""}</span>
+          </div>
+        `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+
+  app.innerHTML = `
+    <div class="wrap-narrow">
+    <div class="card-box center">
+      <div class="final-emoji">${tooFew ? "🙏" : "🤖✨"}</div>
+      <h2>${tooFew ? "Пока рано собирать Навыки" : "Навыки ИИ-помощника собраны!"}</h2>
+      ${!tooFew ? `<div class="level-badge">${esc(levelLabel(s.selected_for_ai))}</div>` : ""}
+      <p class="lede center" style="margin:8px auto 0">
+        ${tooFew
+          ? "Среди показанных тем актуальных для вас оказалось немного — переходить ко второму этапу особо не из чего, но это тоже полезный результат."
+          : "Готово! ИИ-помощник настроен под эти задачи и будет решать их быстрее, проще и точнее."}
+      </p>
+      <div class="send-status pending" id="sendStatus">Сохраняем результат…</div>
+    </div>
+    ${skillsHtml}
+    <p class="thanks-line center">${tooFew ? "Спасибо! Можно закрыть эту вкладку." : "Настройка завершена — можно закрыть эту вкладку."}</p>
+    </div>
+  `;
+
+  sendResult(payload).then(result => {
+    const el = document.getElementById("sendStatus");
+    if (!el) return;
+    if (result === "ok"){ el.className = "send-status ok"; el.textContent = "✓ Результат сохранён"; }
+    else if (result === "skipped"){ el.className = "send-status pending"; el.textContent = "Автосохранение не настроено"; }
+    else { el.className = "send-status err"; el.textContent = "Не удалось сохранить автоматически"; }
+  });
+}
+
+// footer может менять высоту (лоток с поручениями) — держим отступ страницы синхронным,
+// чтобы плавающая панель снизу никогда не перекрывала кликабельные карточки
+const footerResizeObserver = new ResizeObserver(() => {
+  document.body.style.paddingBottom = (footerBar.offsetHeight + 16) + "px";
+});
+footerResizeObserver.observe(footerBar);
+
+render();
+</script>
+</body>
+</html>
