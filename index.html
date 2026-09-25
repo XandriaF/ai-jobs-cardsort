@@ -219,7 +219,7 @@
 <script>
 /* ======================= НАСТРОЙКА ======================= */
 // URL веб-приложения Google Apps Script (см. инструкцию в AppsScript.gs).
-const SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwxqyML5L-i_lFFzk8hAqyEkZyy3QHrBso40q4XWUUOTF1Ukq8vPV4qltu4XkOea8nz/exec";
+const SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyU2lSCYoXF6qpkKfxzsHcDhmkRsMOhMBJD-xUW8EA91iTox8_WJHPN9NBoSsaifq2JuA/exec";
 
 const RESPONDENT_PARAM_NAMES = ["uid", "respondent", "respondent_id", "panelist_id", "id", "sid", "user_id", "code"];
 const BLOCKS_PER_SESSION = 3;
@@ -247,6 +247,40 @@ function getRespondentCodeFromUrl(){
   return "";
 }
 
+/* ======= Устойчивость сессии в одном браузере (персональных ссылок с кодом нет) =======
+   Без уникального кода респондента в ссылке нет способа отличить одного и того же
+   человека от повторного захода. Частично компенсируем это: id сессии храним в
+   localStorage этого браузера — повторное открытие той же ссылки в том же браузере
+   продолжит ту же сессию, а не создаст новую (полезно, если страница случайно
+   перезагрузилась посреди прохождения). Прохождение опроса заново не блокируется —
+   при желании респондент может пройти его ещё раз, это просто создаст новую запись
+   в «Ответы» под тем же session_id. Это не защищает от разных браузеров/устройств
+   одного человека — здесь без кода respondent-а это принципиально невозможно. */
+function getOrCreateSessionId(){
+  try {
+    const existing = localStorage.getItem("aijobs_session_id");
+    if (existing) return existing;
+    const id = uuid();
+    localStorage.setItem("aijobs_session_id", id);
+    return id;
+  } catch (e){ return uuid(); }
+}
+
+/* ======= ОС и размер окна — для диагностики флоу по типам устройств ======= */
+function detectOS(){
+  const ua = navigator.userAgent || "";
+  if (/Windows/i.test(ua)) return "Windows";
+  if (/iPhone|iPad|iPod/i.test(ua)) return "iOS";
+  if (/Android/i.test(ua)) return "Android";
+  if (/Mac OS X|Macintosh/i.test(ua)) return "macOS";
+  if (/CrOS/i.test(ua)) return "ChromeOS";
+  if (/Linux/i.test(ua)) return "Linux";
+  return "Unknown";
+}
+function getViewport(){
+  try { return `${window.innerWidth}x${window.innerHeight}`; } catch (e){ return ""; }
+}
+
 /* ======= Балансировка показов блоков между респондентами ======= */
 async function fetchImpressionCounts(){
   if (!SHEET_WEBHOOK_URL) return {};
@@ -268,7 +302,7 @@ function pickBalancedBlocks(counts){
 }
 function sendImpression(chosenBlocks){
   if (!SHEET_WEBHOOK_URL) return;
-  const payload = { type: "impression", session_id: state.sessionId, respondent_code: state.respondentCode || null, blocks: chosenBlocks.map(b => b.id) };
+  const payload = { type: "impression", session_id: state.sessionId, respondent_code: state.respondentCode || null, os: state.os, viewport: state.viewport, blocks: chosenBlocks.map(b => b.id) };
   fetch(SHEET_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }).catch(() => {});
 }
 function sendResult(payload){
@@ -292,7 +326,7 @@ function flushActionLog(){
   if (!SHEET_WEBHOOK_URL) return;
   const unsent = state.actionLog.slice(state.actionLogSent);
   if (unsent.length === 0) return;
-  const payload = { type: "actions", session_id: state.sessionId, respondent_code: state.respondentCode || null, entries: unsent };
+  const payload = { type: "actions", session_id: state.sessionId, respondent_code: state.respondentCode || null, os: state.os, viewport: state.viewport, entries: unsent };
   state.actionLogSent = state.actionLog.length;
   fetch(SHEET_WEBHOOK_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }).catch(() => {});
 }
@@ -302,21 +336,31 @@ function flushActionLogBeacon(){
   if (!SHEET_WEBHOOK_URL || !navigator.sendBeacon) return;
   const unsent = state.actionLog.slice(state.actionLogSent);
   if (unsent.length === 0) return;
-  const payload = { type: "actions", session_id: state.sessionId, respondent_code: state.respondentCode || null, entries: unsent };
+  const payload = { type: "actions", session_id: state.sessionId, respondent_code: state.respondentCode || null, os: state.os, viewport: state.viewport, entries: unsent };
   state.actionLogSent = state.actionLog.length;
   try {
     const blob = new Blob([JSON.stringify(payload)], { type: "text/plain;charset=utf-8" });
     navigator.sendBeacon(SHEET_WEBHOOK_URL, blob);
   } catch (e){}
 }
+// На каком экране (state.phase) респондент закрыл вкладку — отдельная метка в логе действий,
+// чтобы видеть точку отвала даже если на этом экране не было других отслеживаемых кликов.
+let closeMarkerLogged = false;
+function logCloseMarkerOnce(){
+  if (closeMarkerLogged) return;
+  closeMarkerLogged = true;
+  logAction("tab_closed", null);
+}
 document.addEventListener("visibilitychange", () => { if (document.hidden) flushActionLogBeacon(); });
-window.addEventListener("pagehide", flushActionLogBeacon);
+window.addEventListener("pagehide", () => { logCloseMarkerOnce(); flushActionLogBeacon(); });
 
 /* ======================= СОСТОЯНИЕ ======================= */
 const state = {
   phase: "intro",
-  sessionId: uuid(),
+  sessionId: getOrCreateSessionId(),
   respondentCode: getRespondentCodeFromUrl(),
+  os: detectOS(),
+  viewport: getViewport(),
   chosenBlocks: [],
   workingSet: [],
   revealed: false,
@@ -807,6 +851,8 @@ function buildResultPayload(){
   return {
     session_id: state.sessionId,
     respondent_code: state.respondentCode || null,
+    os: state.os,
+    viewport: state.viewport,
     timestamp: new Date().toISOString(),
     blocks_shown: state.chosenBlocks.map(b => b.title),
     items: state.workingSet.map(i => ({
